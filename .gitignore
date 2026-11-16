@@ -1,0 +1,65 @@
+__pycache__/
+*.pyc
+.venv/
+build-workspace/.gradle/
+build-workspace/.git/
+build-workspace/build/
+build-workspace/**/build/
+*.tar.gz
+*.log
+
+# ─── Regras Mescladas Automaticamente (devkit) ───
+# Dependencies
+venv/
+env/
+*.py[cod]
+*$py.class
+.Python
+pip-log.txt
+
+# Build & Output
+dist/
+build/
+out/
+coverage/
+*.egg-info/
+.installed.cfg
+*.egg
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+htmlcov/
+
+# Environment & Secrets
+.env
+.env*
+!.env.example
+!.env.template
+*.pem
+*.key
+*.p12
+*.pfx
+
+# Databases
+*.sqlite
+*.sqlite3
+*.db
+pgdata/
+
+# OS & IDEs
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+README.generated.md
+
+# ─── Proteção do Repositório Público (Extensões & Plugins Específicos) ───
+build-workspace/
+*.jar
+extensions/*.py
+!extensions/_example.py
+*.local.*
+legacy/
