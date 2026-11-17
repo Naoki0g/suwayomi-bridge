@@ -13,7 +13,9 @@ export CURL_CA_BUNDLE="$ROOT/etc/ssl/cert.pem"
 export PYTHONUNBUFFERED="1"
 
 if [ -f "$BASE/.env" ]; then
+    set -a
     . "$BASE/.env"
+    set +a
 fi
 
 VPS_USER="${VPS_USER:-usuario}"
