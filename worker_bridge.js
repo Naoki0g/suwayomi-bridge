@@ -9,6 +9,10 @@ const vm = require('vm');
 
 const { webcrypto } = crypto;
 
+const WORKER_NAME_PREFIX = process.env.SOURCE_A_WORKER_PREFIX || 'stream';
+const DEFAULT_ORIGIN = (process.env.SOURCE_A_URL || 'https://example-source.com').replace(/\/+$/, '');
+const DEFAULT_PATH_PREFIX = process.env.SOURCE_A_PATH_PREFIX || '/dist/engine';
+
 const moduleScriptCache = new Map();
 const pendingModuleFetches = new Map();
 let isStreamingMode = false;
@@ -346,13 +350,13 @@ class VirtualWorker extends VirtualEventTarget {
   constructor(url, opts = {}, parentSession = null) {
     super();
     this._parentSession = parentSession;
-    const baseUrl = (parentSession && parentSession.workerUrl) || 'https://example-source.com/';
+    const baseUrl = (parentSession && parentSession.workerUrl) || `${DEFAULT_ORIGIN}/`;
     this._url = new URL(String(url), baseUrl).href;
     this._opts = opts && typeof opts === 'object' ? opts : {};
     this._name =
       typeof this._opts.name === 'string' && this._opts.name
         ? this._opts.name
-        : 'stream-yggdrasil-module';
+        : `${WORKER_NAME_PREFIX}-yggdrasil-module`;
     this._terminated = false;
     this._childSession = null;
     this._queuedMsgs = [];
@@ -483,7 +487,7 @@ class WorkerSession {
     this.protocolVersion =
       protocolVersion !== undefined
         ? Number(protocolVersion)
-        : workerName === 'stream-yggdrasil'
+        : workerName === `${WORKER_NAME_PREFIX}-yggdrasil`
           ? 5
           : 1;
     this.codeHash = crypto.createHash('sha256').update(workerCode).digest('hex');
@@ -913,11 +917,11 @@ async function handleRequest(req) {
     const surface = req.surface || 'manga';
     const workerUrl =
       req.workerUrl ||
-      `https://example-source.com/dist/engine/__hydra/${surface}/${req.workerFile}.js?transport=3`;
+      `${DEFAULT_ORIGIN}${DEFAULT_PATH_PREFIX}/__hydra/${surface}/${req.workerFile}.js?transport=3`;
     const workerCode = loadWorkerCode(req);
     const session = await getWorkerSession(
       workerUrl,
-      'stream-hydra',
+      `${WORKER_NAME_PREFIX}-hydra`,
       workerCode,
       req.userAgent
     );
@@ -930,11 +934,11 @@ async function handleRequest(req) {
   if (op === 'kaguya_transform') {
     const workerUrl =
       req.workerUrl ||
-      `https://example-source.com/dist/engine/__kaguya/${req.workerFile}.js?transport=3`;
+      `${DEFAULT_ORIGIN}${DEFAULT_PATH_PREFIX}/__kaguya/${req.workerFile}.js?transport=3`;
     const workerCode = loadWorkerCode(req);
     const session = await getWorkerSession(
       workerUrl,
-      'stream-kaguya',
+      `${WORKER_NAME_PREFIX}-kaguya`,
       workerCode,
       req.userAgent
     );
@@ -958,11 +962,11 @@ async function handleRequest(req) {
   if (op === 'yggdrasil_decipher') {
     const workerUrl =
       req.workerUrl ||
-      'https://example-source.com/dist/engine/__yggdrasil/yggdrasil-nw.js?transport=5';
+      `${DEFAULT_ORIGIN}${DEFAULT_PATH_PREFIX}/__yggdrasil/yggdrasil-nw.js?transport=5`;
     const workerCode = loadWorkerCode(req);
     const session = new WorkerSession(
       workerUrl,
-      'stream-yggdrasil',
+      `${WORKER_NAME_PREFIX}-yggdrasil`,
       workerCode,
       req.userAgent,
       5

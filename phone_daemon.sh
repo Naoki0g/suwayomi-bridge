@@ -108,6 +108,10 @@ start_all() {
     settings put secure block_usb_lock 0 >/dev/null 2>&1
     dumpsys deviceidle whitelist +com.android.shell >/dev/null 2>&1
     dumpsys deviceidle disable >/dev/null 2>&1
+    cmd appops set com.android.shell RUN_IN_BACKGROUND allow >/dev/null 2>&1
+    cmd appops set com.android.shell RUN_ANY_IN_BACKGROUND allow >/dev/null 2>&1
+    cmd appops set com.android.shell WAKE_LOCK allow >/dev/null 2>&1
+    am set-standby-bucket com.android.shell active >/dev/null 2>&1
 
     nohup /system/bin/sh "$BASE/phone_daemon.sh" _proxy_loop >/dev/null 2>&1 &
     echo $! > "$BASE/proxy_loop.pid"
